@@ -15,109 +15,109 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(uuid())
-  email     String        @unique
-  password  String
-  name      String?
-  company   String
-  gstin     String?
-  phone     String?
-  mobile    String?
-  address   String?
-  city      String?
-  state     String?
-  pincode   String?
-  logoUrl   String?
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  name     String?
+  company  String
+  gstin    String?
+  phone    String?
+  mobile   String?
+  address  String?
+  city     String?
+  state    String?
+  pincode  String?
+  logoUrl  String?
 
-  bankDetail   BankDetail?
-  settings     UserSettings?
+  bankDetail BankDetail?
+  settings   UserSettings?
 
-  invoices     Invoice[]
-  clients      Client[]
+  invoices Invoice[]
+  clients  Client[]
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BankDetail {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id        String @id @default(uuid())
+  userId    String @unique
   bankName  String
   branch    String
   accountNo String
   ifscCode  String
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model UserSettings {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  terms        String?
+  id     String  @id @default(uuid())
+  userId String  @unique
+  terms  String?
 
-  user         User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Client {
-  id        String    @id @default(uuid())
-  userId    String
-  name      String
-  gstin     String?
-  address   String?
-  city      String?
-  state     String?
-  pincode   String?
+  id      String  @id @default(uuid())
+  userId  String
+  name    String
+  gstin   String?
+  address String?
+  city    String?
+  state   String?
+  pincode String?
 
-  user      User      @relation(fields: [userId], references: [id])
-  invoices  Invoice[]
+  user     User      @relation(fields: [userId], references: [id])
+  invoices Invoice[]
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Invoice {
-  id             String     @id @default(uuid())
-  userId         String
-  clientId       String?
+  id       String  @id @default(uuid())
+  userId   String
+  clientId String?
 
-  invoiceNumber  Int
-  invoiceType    InvoiceType  // 'TAX' or 'PROFORMA'
-  taxType        TaxType      // 'CGST_SGST' or 'IGST'
+  invoiceNumber Int
+  invoiceType   InvoiceType // 'TAX' or 'PROFORMA'
+  taxType       TaxType // 'CGST_SGST' or 'IGST'
 
-  invoiceDate    DateTime
-  dueDate        DateTime?
+  invoiceDate DateTime
+  dueDate     DateTime?
 
-  poNumber       String?
-  vehicleNumber  String?
-  transporter    String?
-  bundleCount    Int?
+  poNumber      String?
+  vehicleNumber String?
+  transporter   String?
+  bundleCount   Int?
 
-  notes          String?
+  notes String?
 
-  subtotal       Float
-  cgst           Float?       // null if IGST
-  sgst           Float?
-  igst           Float?       // null if CGST/SGST
-  total          Float
-  roundedTotal   Float
+  subtotal     Float
+  cgst         Float? // null if IGST
+  sgst         Float?
+  igst         Float? // null if CGST/SGST
+  total        Float
+  roundedTotal Float
 
-  items          Item[]
-  user           User         @relation(fields: [userId], references: [id])
-  client         Client?      @relation(fields: [clientId], references: [id])
+  items  Item[]
+  user   User    @relation(fields: [userId], references: [id])
+  client Client? @relation(fields: [clientId], references: [id])
 
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Item {
-  id           String   @id @default(uuid())
-  invoiceId    String
-  description  String
-  hsnCode      String?
-  quantity     Int
-  rate         Float
-  amount       Float      // Pre-calculated line item total
+  id          String  @id @default(uuid())
+  invoiceId   String
+  description String
+  hsnCode     String?
+  quantity    Int
+  rate        Float
+  amount      Float // Pre-calculated line item total
 
-  invoice      Invoice   @relation(fields: [invoiceId], references: [id])
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
 }
 
 enum InvoiceType {
