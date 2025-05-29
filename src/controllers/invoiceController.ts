@@ -1,0 +1,106 @@
+import { Request, Response } from "express"
+import prisma from "../config/db"
+
+export const createInvoice = async (req: Request, res: Response) => {
+  const userId = (req as any).userId
+  const {
+    invoiceType,
+    taxType,
+    invoiceDate,
+    poNumber,
+    vehicleNumber,
+    transporter,
+    bundleCount,
+    client,
+    taxRate,
+    items
+  } = req.body
+
+  try {
+    const existingClient = await prisma.client.findFirst({
+      where: {
+        name: client.name,
+        userId
+      }
+    })
+
+    const clientData = existingClient
+      ? existingClient
+      : await prisma.client.create({
+          data: {
+            userId,
+            name: client.name,
+            gstin: client.gstin,
+            address: client.address,
+            city: client.city,
+            state: client.state,
+            pincode: client.pincode
+          }
+        })
+
+    // Subtotal
+    const subtotal = items.reduce((sum: number, item: any) => {
+      return sum + item.quantity * item.rate
+    }, 0)
+
+    let cgst = null
+    let sgst = null
+    let igst = null
+
+    if (taxType === "CGST_SGST") {
+      cgst = (subtotal * taxRate) / 200
+      sgst = (subtotal * taxRate) / 200
+    } else {
+      igst = (subtotal * taxRate) / 100
+    }
+
+    const total = subtotal + (cgst ?? 0) + (sgst ?? 0) + (igst ?? 0)
+    const roundedTotal = Math.round(total)
+
+    // Get latest invoice number
+    const latest = await prisma.invoice.findFirst({
+      where: { userId },
+      orderBy: { invoiceNumber: "desc" }
+    })
+
+    const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1
+
+    const newInvoice = await prisma.invoice.create({
+      data: {
+        userId,
+        clientId: clientData.id,
+        invoiceType,
+        taxType,
+        invoiceDate: new Date(invoiceDate),
+        poNumber,
+        vehicleNumber,
+        transporter,
+        bundleCount,
+        subtotal,
+        cgst,
+        sgst,
+        igst,
+        total,
+        roundedTotal,
+        invoiceNumber,
+        items: {
+          create: items.map((item: any) => ({
+            description: item.description,
+            hsnCode: item.hsnCode,
+            quantity: item.quantity,
+            rate: item.rate,
+            amount: item.quantity * item.rate
+          }))
+        }
+      },
+      include: {
+        items: true
+      }
+    })
+
+    res.status(201).json({ invoice: newInvoice })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: "Failed to create invoice" })
+  }
+}
