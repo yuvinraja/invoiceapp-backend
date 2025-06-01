@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
-import prisma from "../config/db"
+import { Request, Response } from "express";
+import prisma from "../config/db";
 
 export const createInvoice = async (req: Request, res: Response) => {
-  const userId = (req as any).userId
+  const userId = (req as any).userId;
   const {
     invoiceType,
     taxType,
@@ -13,16 +13,16 @@ export const createInvoice = async (req: Request, res: Response) => {
     bundleCount,
     client,
     taxRate,
-    items
-  } = req.body
+    items,
+  } = req.body;
 
   try {
     const existingClient = await prisma.client.findFirst({
       where: {
         name: client.name,
-        userId
-      }
-    })
+        userId,
+      },
+    });
 
     const clientData = existingClient
       ? existingClient
@@ -34,36 +34,36 @@ export const createInvoice = async (req: Request, res: Response) => {
             address: client.address,
             city: client.city,
             state: client.state,
-            pincode: client.pincode
-          }
-        })
+            pincode: client.pincode,
+          },
+        });
 
     // Subtotal
     const subtotal = items.reduce((sum: number, item: any) => {
-      return sum + item.quantity * item.rate
-    }, 0)
+      return sum + item.quantity * item.rate;
+    }, 0);
 
-    let cgst = null
-    let sgst = null
-    let igst = null
+    let cgst = null;
+    let sgst = null;
+    let igst = null;
 
     if (taxType === "CGST_SGST") {
-      cgst = (subtotal * taxRate) / 200
-      sgst = (subtotal * taxRate) / 200
+      cgst = (subtotal * taxRate) / 200;
+      sgst = (subtotal * taxRate) / 200;
     } else {
-      igst = (subtotal * taxRate) / 100
+      igst = (subtotal * taxRate) / 100;
     }
 
-    const total = subtotal + (cgst ?? 0) + (sgst ?? 0) + (igst ?? 0)
-    const roundedTotal = Math.round(total)
+    const total = subtotal + (cgst ?? 0) + (sgst ?? 0) + (igst ?? 0);
+    const roundedTotal = Math.round(total);
 
     // Get latest invoice number
     const latest = await prisma.invoice.findFirst({
       where: { userId },
-      orderBy: { invoiceNumber: "desc" }
-    })
+      orderBy: { invoiceNumber: "desc" },
+    });
 
-    const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1
+    const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1;
 
     const newInvoice = await prisma.invoice.create({
       data: {
@@ -89,18 +89,57 @@ export const createInvoice = async (req: Request, res: Response) => {
             hsnCode: item.hsnCode,
             quantity: item.quantity,
             rate: item.rate,
-            amount: item.quantity * item.rate
-          }))
-        }
+            amount: item.quantity * item.rate,
+          })),
+        },
       },
       include: {
-        items: true
-      }
-    })
+        items: true,
+      },
+    });
 
-    res.status(201).json({ invoice: newInvoice })
+    res.status(201).json({ invoice: newInvoice });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: "Failed to create invoice" })
+    console.error(err);
+    res.status(500).json({ message: "Failed to create invoice" });
   }
-}
+};
+
+export const getInvoices = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+
+    const invoices = await prisma.invoice.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        invoiceNumber: true,
+        invoiceType: true,
+        invoiceDate: true,
+        taxType: true,
+        total: true,
+        client: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: { invoiceDate: "desc" },
+    });
+
+    res.json(
+      invoices.map((inv) => ({
+        id: inv.id,
+        invoiceNumber: inv.invoiceNumber,
+        invoiceDate: inv.invoiceDate,
+        invoiceType: inv.invoiceType,
+        taxType: inv.taxType,
+        total: inv.total,
+        clientName: inv.client ? inv.client.name : null,
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to retrieve invoices" });
+  }
+};
