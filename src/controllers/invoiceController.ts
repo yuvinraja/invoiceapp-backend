@@ -143,3 +143,46 @@ export const getInvoices = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to retrieve invoices" });
   }
 };
+
+export const getInvoiceById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = (req as any).userId;
+
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        client: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            company: true,
+            gstin: true,
+            phone: true,
+            mobile: true,
+            address: true,
+            city: true,
+            state: true,
+            pincode: true,
+            logoUrl: true,
+            bankDetail: true,
+            settings: true,
+          },
+        },
+      },
+    });
+
+    if (!invoice || invoice.userId !== userId) {
+      res.status(404).json({ message: "Invoice not found" });
+      return;
+    }
+
+    res.json(invoice);
+    return;
+  } catch (err) {
+    console.error("Error fetching invoice. ", err);
+    res.status(500).json({ message: "Failed to retrieve invoice" });
+  }
+};
