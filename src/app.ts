@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import invoiceRoutes from "./routes/invoiceRoutes";
+import statsRoutes from "./routes/statsRoutes";
 
 const app = express();
 
@@ -24,9 +25,10 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/invoices", invoiceRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Invoice App API");
+  res.send("Welcome to the Invoi App API");
 });
 
 export default app;

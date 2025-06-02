@@ -71,6 +71,7 @@ export const createInvoice = async (req: Request, res: Response) => {
         clientId: clientData.id,
         invoiceType,
         taxType,
+        taxRate,
         invoiceDate: new Date(invoiceDate),
         poNumber,
         vehicleNumber,
