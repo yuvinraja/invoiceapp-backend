@@ -28,7 +28,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/stats", statsRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Invoi App API");
+  res.send("Welcome to the Invoice App API");
 });
 
 export default app;

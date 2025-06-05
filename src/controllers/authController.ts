@@ -74,26 +74,3 @@ export const login = async (
     next(err);
   }
 };
-
-export const me = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const userId = (req as any).userId;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { bankDetail: true, settings: true },
-    });
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    res.json({ user });
-  } catch (err) {
-    res.status(500).json({ message: "Unable to fetch user" });
-    next(err);
-  }
-};
