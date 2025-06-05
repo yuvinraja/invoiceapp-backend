@@ -94,3 +94,95 @@ export const me = async (
     next(err);
   }
 };
+
+export const updateProfile = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const {
+    name,
+    company,
+    gstin,
+    phone,
+    mobile,
+    address,
+    city,
+    state,
+    pincode,
+    logoUrl,
+  } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        company,
+        gstin,
+        phone,
+        mobile,
+        address,
+        city,
+        state,
+        pincode,
+        logoUrl,
+      },
+    });
+
+    res.status(200).json({ message: "Profile updated successfully", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error during profile update" });
+  }
+};
+
+export const updateBankDetails = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const { bankName, branch, accountNo, ifscCode } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        bankDetail: {
+          update: {
+            bankName,
+            branch,
+            accountNo,
+            ifscCode,
+          },
+        },
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Bank details updated successfully", user });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Server error during bank details update" });
+  }
+};
+
+export const updateSettings = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const { terms } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        settings: {
+          update: {
+            terms,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({ message: "Settings updated successfully", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error during settings update" });
+  }
+};
