@@ -4,6 +4,7 @@ import prisma from "../config/db";
 export const createInvoice = async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const {
+    invoiceNumber,
     invoiceType,
     taxType,
     invoiceDate,
@@ -12,6 +13,11 @@ export const createInvoice = async (req: Request, res: Response) => {
     transporter,
     bundleCount,
     client,
+    shippingName,
+    shippingAddress,
+    shippingCity,
+    shippingState,
+    shippingPincode,
     taxRate,
     items,
   } = req.body;
@@ -63,7 +69,12 @@ export const createInvoice = async (req: Request, res: Response) => {
       orderBy: { invoiceNumber: "desc" },
     });
 
-    const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1;
+    // const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1;
+
+    // If invoiceNumber is provided in the request, use it; otherwise, generate a new one
+    const finalInvoiceNumber =
+      invoiceNumber || (latest ? latest.invoiceNumber + 1 : 1);
+
 
     const newInvoice = await prisma.invoice.create({
       data: {
@@ -83,7 +94,14 @@ export const createInvoice = async (req: Request, res: Response) => {
         igst,
         total,
         roundedTotal,
-        invoiceNumber,
+        invoiceNumber: finalInvoiceNumber,
+        ...(invoiceType === "TAX" && {
+          shippingName,
+          shippingAddress,
+          shippingCity,
+          shippingState,
+          shippingPincode,
+        }),
         items: {
           create: items.map((item: any) => ({
             description: item.description,

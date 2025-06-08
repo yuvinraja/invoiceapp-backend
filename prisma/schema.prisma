@@ -92,6 +92,12 @@ model Invoice {
   transporter   String?
   bundleCount   Int?
 
+  shippingName    String?
+  shippingAddress String?
+  shippingCity    String?
+  shippingState   String?
+  shippingPincode String?
+
   notes String?
 
   subtotal     Float
