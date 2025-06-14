@@ -11,7 +11,7 @@ export const signup = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, password, company } = req.body;
+    const { email, password } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -25,7 +25,7 @@ export const signup = async (
       data: {
         email,
         password: hashedPassword,
-        company,
+        company: "",
       },
     });
 
@@ -72,5 +72,19 @@ export const login = async (
     console.error(err);
     res.status(500).json({ message: "Login failed" });
     next(err);
+  }
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Since JWTs are stateless, we just send a success response
+    // The client should remove the token from storage
+    res.status(200).json({ 
+      message: "Logged out successfully",
+      success: true 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error during logout" });
   }
 };

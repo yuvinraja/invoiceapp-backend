@@ -75,7 +75,6 @@ export const createInvoice = async (req: Request, res: Response) => {
     const finalInvoiceNumber =
       invoiceNumber || (latest ? latest.invoiceNumber + 1 : 1);
 
-
     const newInvoice = await prisma.invoice.create({
       data: {
         userId,
@@ -203,5 +202,36 @@ export const getInvoiceById = async (req: Request, res: Response) => {
   } catch (err) {
     console.error("Error fetching invoice. ", err);
     res.status(500).json({ message: "Failed to retrieve invoice" });
+  }
+};
+
+export const deleteInvoice = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = (req as any).userId;
+
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id },
+    });
+
+    if (!invoice || invoice.userId !== userId) {
+      res.status(404).json({ message: "Invoice not found" });
+      return;
+    }
+
+    // Delete all items linked to this invoice
+    await prisma.item.deleteMany({
+      where: { invoiceId: id },
+    });
+
+    // Now delete the invoice
+    await prisma.invoice.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Invoice deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete invoice" });
   }
 };
