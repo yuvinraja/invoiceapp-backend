@@ -5,3 +5,10 @@ dist/
 /generated/prisma
 
 .env
+.env.local
+.env.production
+.env.staging
+
+# Build outputs
+build/
+*.tsbuildinfo

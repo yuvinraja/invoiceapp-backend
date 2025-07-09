@@ -28,7 +28,15 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/stats", statsRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Invoice App API");
+  res.json({
+    message: "Welcome to the Invoice App API",
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "healthy" });
 });
 
 export default app;
