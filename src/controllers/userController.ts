@@ -97,6 +97,10 @@ export const me = async (
 
 export const updateProfile = async (req: Request, res: Response) => {
   const userId = (req as any).userId;
+
+  console.log("Updating profile for userId:", userId);
+  console.log("New profile data:", req.body);
+
   const {
     name,
     company,

@@ -3,13 +3,13 @@ import prisma from "../config/db";
 
 export const getStats = async (req: Request, res: Response): Promise<void> => {
   const userId = (req as any).userId;
-  console.log(`Fetching stats for user: ${userId}`);
+  // console.log(`Fetching stats for user: ${userId}`);
 
   try {
     const totalInvoices = await prisma.invoice.count({
       where: { userId },
     });
-    console.log(`Total invoices: ${totalInvoices}`);
+    // console.log(`Total invoices: ${totalInvoices}`);
 
     const totalRevenueResult = await prisma.invoice.aggregate({
       _sum: {
@@ -17,7 +17,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
       },
       where: { userId },
     });
-    console.log(`Total revenue result: ${JSON.stringify(totalRevenueResult)}`);
+    // console.log(`Total revenue result: ${JSON.stringify(totalRevenueResult)}`);
 
     const byInvoiceType = await prisma.invoice.groupBy({
       by: ["invoiceType"],
@@ -26,7 +26,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
         invoiceType: true,
       },
     });
-    console.log(`By invoice type: ${JSON.stringify(byInvoiceType)}`);
+    // console.log(`By invoice type: ${JSON.stringify(byInvoiceType)}`);
 
     const byTaxTypeRaw = await prisma.invoice.findMany({
       where: { userId },
@@ -38,7 +38,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
       return acc;
     }, {} as Record<string, number>);
 
-    console.log(`By tax type: ${JSON.stringify(byTaxType)}`);
+    // console.log(`By tax type: ${JSON.stringify(byTaxType)}`);
 
     const totalRevenue = totalRevenueResult._sum?.roundedTotal ?? 0;
     const averageInvoiceValue =
@@ -53,7 +53,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
       ),
       byTaxType,
     };
-    console.log(`Sending response: ${JSON.stringify(response)}`);
+    // console.log(`Sending response: ${JSON.stringify(response)}`);
 
     res.status(200).json(response);
     return;
@@ -65,7 +65,7 @@ export const getStats = async (req: Request, res: Response): Promise<void> => {
 
 export const getTopClients = async (req: Request, res: Response) => {
   const userId = (req as any).userId;
-  console.log(`Fetching top clients for user: ${userId}`);
+  // console.log(`Fetching top clients for user: ${userId}`);
 
   try {
     const result = await prisma.invoice.groupBy({
@@ -75,15 +75,15 @@ export const getTopClients = async (req: Request, res: Response) => {
       orderBy: { _count: { id: "desc" } },
       take: 5,
     });
-    console.log(`Group by result: ${JSON.stringify(result)}`);
+    // console.log(`Group by result: ${JSON.stringify(result)}`);
 
     const clientIds = result.map((r) => r.clientId!);
-    console.log(`Client IDs: ${JSON.stringify(clientIds)}`);
+    // console.log(`Client IDs: ${JSON.stringify(clientIds)}`);
 
     const clients = await prisma.client.findMany({
       where: { id: { in: clientIds } },
     });
-    console.log(`Clients: ${JSON.stringify(clients)}`);
+    // console.log(`Clients: ${JSON.stringify(clients)}`);
 
     const enriched = result.map((group) => {
       const client = clients.find((c) => c.id === group.clientId);
@@ -93,7 +93,7 @@ export const getTopClients = async (req: Request, res: Response) => {
         invoiceCount: group._count.id,
       };
     });
-    console.log(`Enriched data: ${JSON.stringify(enriched)}`);
+    // console.log(`Enriched data: ${JSON.stringify(enriched)}`);
 
     res.json(enriched);
     return;

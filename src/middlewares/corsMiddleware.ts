@@ -1,12 +1,12 @@
-import cors from 'cors';
-import { env } from '../config/env';
+import cors from "cors";
+import { env } from "../config/env";
 
 const getAllowedOrigins = () => {
   const origins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
   ];
 
   // Add frontend URL from environment
@@ -16,7 +16,9 @@ const getAllowedOrigins = () => {
 
   // Add additional origins if specified
   if (env.ALLOWED_ORIGINS) {
-    const additionalOrigins = env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim());
+    const additionalOrigins = env.ALLOWED_ORIGINS.split(",").map((origin) =>
+      origin.trim()
+    );
     origins.push(...additionalOrigins);
   }
 
@@ -24,29 +26,39 @@ const getAllowedOrigins = () => {
 };
 
 export const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
     const allowedOrigins = getAllowedOrigins();
-    
-    console.log('Request origin:', origin);
-    console.log('Allowed origins:', allowedOrigins);
-    
+
+    console.log("Request origin:", origin); // 👈 Enable this for debugging
+    console.log("Allowed origins:", allowedOrigins); // 👈 Enable this for debugging
+
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) {
-      console.log('No origin, allowing request');
+      console.log("No origin, allowing request");
       return callback(null, true);
     }
-    
+
     if (allowedOrigins.includes(origin)) {
-      console.log('Origin allowed');
+      console.log("Origin allowed");
       callback(null, true);
     } else {
-      console.log('Origin not allowed by CORS');
-      callback(new Error('Not allowed by CORS'));
+      console.log("Origin not allowed by CORS");
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Cookie",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+  ],
 };
 
 export const corsMiddleware = cors(corsOptions);
