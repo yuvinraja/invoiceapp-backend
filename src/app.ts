@@ -14,7 +14,7 @@ import statsRoutes from "./routes/statsRoutes";
 const app = express();
 
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: "https://invoicegst.vercel.app", credentials: true }));
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
