@@ -11,10 +11,12 @@ import userRoutes from "./routes/userRoutes";
 import invoiceRoutes from "./routes/invoiceRoutes";
 import statsRoutes from "./routes/statsRoutes";
 
+import { corsMiddleware } from "./middlewares/corsMiddleware";
+
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "https://invoicegst.vercel.app", credentials: true }));
+app.use(corsMiddleware);
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());

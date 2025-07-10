@@ -2,8 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/db";
+import { env } from "process";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = env.JWT_SECRET!;
 
 export const signup = async (
   req: Request,
@@ -30,11 +31,13 @@ export const signup = async (
     });
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+    const isProduction = env.FRONTEND_URL?.includes("https://");
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: isProduction ? undefined : "localhost",
     }); // 7 days
 
     res.status(201).json({
@@ -68,11 +71,13 @@ export const login = async (
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+    const isProduction = env.FRONTEND_URL?.includes("https://");
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: isProduction ? undefined : "localhost",
     }); // 7 days
 
     res.json({
@@ -87,10 +92,12 @@ export const login = async (
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
+    const isProduction = env.FRONTEND_URL?.includes("https://");
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: isProduction ? "none" : "lax",
+      domain: isProduction ? undefined : "localhost",
     });
 
     res.status(200).json({
