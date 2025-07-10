@@ -5,8 +5,8 @@ const envSchema = z.object({
   DIRECT_URL: z.string().optional(),
   JWT_SECRET: z.string(),
   PORT: z.string().transform(Number),
-  FRONTEND_URL: z.string().default('http://localhost:3000'), // Add this for CORS
-  ALLOWED_ORIGINS: z.string().optional(), // Multiple origins separated by comma
+  FRONTEND_URL: z.string().default('http://localhost:3001'),
+  ALLOWED_ORIGINS: z.string().optional(),
 });
 
 const parseEnv = () => {
