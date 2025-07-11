@@ -217,76 +217,9 @@ POST /api/user/logo      # Upload company logo
 }
 ```
 
-## 📊 Business Impact & Technical Achievements
+## 📞 Contact & Portfolio
 
-### Performance Optimizations
-- **Database Indexing**: Optimized queries for user-specific data retrieval
-- **Prisma Relations**: Efficient joins and data fetching strategies
-- **Calculated Fields**: Pre-computed totals to reduce real-time calculation overhead
-
-### Scalability Considerations
-- **Modular Architecture**: Clean separation of concerns for easy maintenance
-- **Type Safety**: Comprehensive TypeScript implementation reduces runtime errors
-- **Migration Strategy**: Version-controlled database schema changes
-- **Environment Abstraction**: Easy deployment across different environments
-
-### Code Quality & Maintainability
-- **Clean Code Principles**: Self-documenting code with meaningful variable names
-- **Error Handling**: Comprehensive try-catch blocks with proper error responses
-- **Validation Layer**: Input validation at multiple levels (Zod, Prisma)
-- **Security Best Practices**: Industry-standard authentication and authorization
-
-## 🔄 Project Status
-
-**Current Status**: ✅ **Production Ready**
-
-### Completed Features
-- ✅ Complete authentication system with JWT
-- ✅ Invoice CRUD operations with tax calculations
-- ✅ Client management system
-- ✅ Business analytics dashboard
-- ✅ File upload integration
-- ✅ Database migrations and schema management
-
-### Future Enhancements
-- 🔄 Email notifications for invoice generation
-- 🔄 PDF generation and download functionality
-- 🔄 Advanced reporting with date range filters
-- 🔄 Multi-currency support
-- 🔄 API rate limiting and caching
-
-## 🤝 Contributing
-
-This project demonstrates enterprise-level development practices and is open for collaboration. To contribute:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Maintain test coverage for new features
-- Update documentation for API changes
-- Follow conventional commit messages
-
-## 📬 Contact & Links
-
-**Developer**: Yuvin Raja  
-**GitHub**: [github.com/yuvinraja](https://github.com/yuvinraja)  
-**Project Repository**: [invoiceapp-backend](https://github.com/yuvinraja/invoiceapp-backend)
-
----
-
-*This project showcases expertise in modern backend development, database design, API architecture, and business logic implementation. It demonstrates the ability to build production-ready applications with proper security, scalability, and maintainability considerations.*
-
-## 🎯 Skills Demonstrated
-
-- **Backend Architecture**: RESTful API design and implementation
-- **Database Design**: Complex relational modeling with Prisma ORM
-- **Security Implementation**: Authentication, authorization, and data protection
-- **Business Logic**: Complex tax calculations and financial analytics
-- **Type Safety**: Comprehensive TypeScript implementation
-- **DevOps Practices**: Environment management and deployment preparation
-- **Code Quality**: Clean code principles and maintainable architecture
+**Yuvin Raja**
+- **GitHub**: [@yuvinraja](https://github.com/yuvinraja)
+- **LinkedIn**: [Connect with me](https://linkedin.com/in/yuvinraja)
+- **Portfolio**: [View my work](https://yuvinraja.vercel.app)
