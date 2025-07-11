@@ -72,6 +72,7 @@ export const getTopClients = async (req: Request, res: Response) => {
       by: ["clientId"],
       where: { userId, clientId: { not: null } },
       _count: { id: true },
+      _sum: { roundedTotal: true },
       orderBy: { _count: { id: "desc" } },
       take: 5,
     });
@@ -91,6 +92,7 @@ export const getTopClients = async (req: Request, res: Response) => {
         clientId: group.clientId,
         name: client?.name || "Unknown",
         invoiceCount: group._count.id,
+        totalAmount: group._sum.roundedTotal || 0,
       };
     });
     // console.log(`Enriched data: ${JSON.stringify(enriched)}`);

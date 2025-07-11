@@ -147,14 +147,25 @@ export const updateBankDetails = async (req: Request, res: Response) => {
       where: { id: userId },
       data: {
         bankDetail: {
-          update: {
-            bankName,
-            branch,
-            accountNo,
-            ifscCode,
-          },
-        },
+          upsert: {
+            create: {
+              bankName,
+              branch,
+              accountNo,
+              ifscCode,
+            },
+            update: {
+              bankName,
+              branch,
+              accountNo,
+              ifscCode,
+            }
+          }
+        }
       },
+      include: {
+        bankDetail: true // Include the bank details in the response
+      }
     });
 
     res
@@ -177,11 +188,19 @@ export const updateSettings = async (req: Request, res: Response) => {
       where: { id: userId },
       data: {
         settings: {
-          update: {
-            terms,
-          },
-        },
+          upsert: {
+            create: {
+              terms,
+            },
+            update: {
+              terms,
+            }
+          }
+        }
       },
+      include: {
+        settings: true // Include the settings in the response
+      }
     });
 
     res.status(200).json({ message: "Settings updated successfully", user });
