@@ -32,10 +32,6 @@ export const corsOptions = {
   ) => {
     const allowedOrigins = getAllowedOrigins();
 
-    console.log("Request origin:", origin); // 👈 Enable this for debugging
-    console.log("Allowed origins:", allowedOrigins); // 👈 Enable this for debugging
-
-    // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) {
       console.log("No origin, allowing request");
       return callback(null, true);

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../config/db";
+import upload from "../lib/multer";
 
 export const setupProfile = async (
   req: Request,
@@ -159,13 +160,13 @@ export const updateBankDetails = async (req: Request, res: Response) => {
               branch,
               accountNo,
               ifscCode,
-            }
-          }
-        }
+            },
+          },
+        },
       },
       include: {
-        bankDetail: true // Include the bank details in the response
-      }
+        bankDetail: true, // Include the bank details in the response
+      },
     });
 
     res
@@ -194,18 +195,41 @@ export const updateSettings = async (req: Request, res: Response) => {
             },
             update: {
               terms,
-            }
-          }
-        }
+            },
+          },
+        },
       },
       include: {
-        settings: true // Include the settings in the response
-      }
+        settings: true, // Include the settings in the response
+      },
     });
 
     res.status(200).json({ message: "Settings updated successfully", user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error during settings update" });
+  }
+};
+
+export const uploadLogo = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const file = (req as Request & { file?: Express.Multer.File }).file;
+
+  try {
+    if (!file || !file.path) {
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { logoUrl: file.path },
+    });
+
+    res.status(200).json({
+      logoUrl: updated.logoUrl,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error during logo upload" });
   }
 };
