@@ -80,7 +80,7 @@ model Invoice {
   userId   String
   clientId String?
 
-  invoiceNumber Int
+  invoiceNumber String
   invoiceType   InvoiceType // 'TAX' or 'PROFORMA'
   taxType       TaxType // 'CGST_SGST' or 'IGST'
   taxRate       Float? // Applicable if taxType is CGST_SGST

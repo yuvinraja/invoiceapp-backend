@@ -20,6 +20,23 @@ export const createInvoice = async (req: Request, res: Response) => {
     shippingPincode,
     taxRate,
     items,
+  }: {
+    invoiceNumber?: string;
+    invoiceType: string;
+    taxType: string;
+    invoiceDate: string;
+    poNumber?: string;
+    vehicleNumber?: string;
+    transporter?: string;
+    bundleCount?: number;
+    client: any;
+    shippingName?: string;
+    shippingAddress?: string;
+    shippingCity?: string;
+    shippingState?: string;
+    shippingPincode?: string;
+    taxRate?: number;
+    items: any[];
   } = req.body;
 
   try {
@@ -63,24 +80,30 @@ export const createInvoice = async (req: Request, res: Response) => {
     const total = subtotal + (cgst ?? 0) + (sgst ?? 0) + (igst ?? 0);
     const roundedTotal = Math.round(total);
 
-    // Get latest invoice number
-    const latest = await prisma.invoice.findFirst({
-      where: { userId },
-      orderBy: { invoiceNumber: "desc" },
-    });
-
-    // const invoiceNumber = latest ? latest.invoiceNumber + 1 : 1;
-
-    // If invoiceNumber is provided in the request, use it; otherwise, generate a new one
-    const finalInvoiceNumber =
-      invoiceNumber || (latest ? latest.invoiceNumber + 1 : 1);
+    // Get latest invoice (for reference, but string invoice numbers are now allowed)
+    let finalInvoiceNumber: string;
+    if (invoiceNumber) {
+      finalInvoiceNumber = invoiceNumber;
+    } else {
+      // Generate a new invoice number as a string (e.g., increment last numeric one, or fallback)
+      const latest = await prisma.invoice.findFirst({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+      });
+      const latestInvoiceNumber = latest?.invoiceNumber?.toString();
+      if (latestInvoiceNumber && /^\d+$/.test(latestInvoiceNumber)) {
+        finalInvoiceNumber = (parseInt(latestInvoiceNumber, 10) + 1).toString();
+      } else {
+        finalInvoiceNumber = "1";
+      }
+    }
 
     const newInvoice = await prisma.invoice.create({
       data: {
         userId,
         clientId: clientData.id,
-        invoiceType,
-        taxType,
+        invoiceType: invoiceType as any,
+        taxType: taxType as any,
         taxRate,
         invoiceDate: new Date(invoiceDate),
         poNumber,
@@ -142,7 +165,10 @@ export const getInvoices = async (req: Request, res: Response) => {
           },
         },
       },
-      orderBy: { invoiceDate: "desc" },
+      orderBy: [
+        { invoiceDate: "desc" },
+        { invoiceNumber: "desc" },
+      ],
     });
 
     res.json(
